@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CAIC Forecast Config</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <h1>CAIC Forecast Configuration</h1>
+
+    <div id="config-panel">
+        <h2>Avalanche Forecast Options</h2>
+
+        <div class="form-group">
+            <label for="region-select">Select Region:</label>
+            <select id="region-select">
+                <option value="">-- Select a Region --</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="forecast-date">Forecast Date:</label>
+            <input type="date" id="forecast-date">
+        </div>
+
+        <div class="form-group">
+            <label>Danger Levels:</label><br>
+            <div id="danger-levels-container"> </div>
+        </div>
+
+        <div class="form-group">
+            <label>Aspects:</label><br>
+            <div id="aspects-container"> </div>
+        </div>
+
+        <div class="form-group">
+            <label>Include Helpers:</label><br>
+            <div id="include-helpers-container"></div>
+        </div>
+
+        <div class="form-group">
+            <label for="slide-slope-min">Slide Slope Min:</label>
+            <input type="number" id="slide-slope-min" value="30">
+        </div>
+        <div class="form-group">
+            <label for="slide-slope-max">Slide Slope Max:</label>
+            <input type="number" id="slide-slope-max" value="50">
+        </div>
+
+        <div class="form-group">
+            <label for="treeline-transition-min">Treeline Transition Min:</label>
+            <input type="number" id="treeline-transition-min" value="10500">
+        </div>
+        <div class="form-group">
+            <label for="treeline-transition-max">Treeline Transition Max:</label>
+            <input type="number" id="treeline-transition-max" value="11500">
+        </div>
+
+
+        <button id="get-forecast-button">Get Forecast</button>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
