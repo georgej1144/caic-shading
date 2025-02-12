@@ -7,36 +7,24 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <h1>CAIC Forecast Configuration</h1>
+    <h1>CAIC Forecast to Caltopo Shading</h1>
 
     <div id="config-panel">
-        <h2>Avalanche Forecast Options</h2>
+        <h2>Options</h2>
 
         <div class="form-group">
-            <label for="region-select">Select Region:</label>
-            <select id="region-select">
-                <option value="">-- Select a Region --</option>
-            </select>
+            <label for="latitude">Latitude:</label>
+            <input type="number" id="latitude" step="any" placeholder="Enter Latitude">
+        </div>
+
+        <div class="form-group">
+            <label for="longitude">Longitude:</label>
+            <input type="number" id="longitude" step="any" placeholder="Enter Longitude">
         </div>
 
         <div class="form-group">
             <label for="forecast-date">Forecast Date:</label>
             <input type="date" id="forecast-date">
-        </div>
-
-        <div class="form-group">
-            <label>Danger Levels:</label><br>
-            <div id="danger-levels-container"> </div>
-        </div>
-
-        <div class="form-group">
-            <label>Aspects:</label><br>
-            <div id="aspects-container"> </div>
-        </div>
-
-        <div class="form-group">
-            <label>Include Helpers:</label><br>
-            <div id="include-helpers-container"></div>
         </div>
 
         <div class="form-group">
@@ -48,16 +36,54 @@
             <input type="number" id="slide-slope-max" value="50">
         </div>
 
-        <div class="form-group">
-            <label for="treeline-transition-min">Treeline Transition Min:</label>
-            <input type="number" id="treeline-transition-min" value="10500">
-        </div>
-        <div class="form-group">
-            <label for="treeline-transition-max">Treeline Transition Max:</label>
-            <input type="number" id="treeline-transition-max" value="11500">
+        <button class="collapsible">Treecover Settings</button>
+        <div class="content">
+            <div class="form-group">
+                <label for="treecover-alp-min">Treecover ALP Min:</label>
+                <input type="number" id="treecover-alp-min" value="0">
+            </div>
+            <div class="form-group">
+                <label for="treecover-alp-max">Treecover ALP Max:</label>
+                <input type="number" id="treecover-alp-max" value="1">
+            </div>
+
+            <div class="form-group">
+                <label for="treecover-tln-min">Treecover TLN Min:</label>
+                <input type="number" id="treecover-tln-min" value="1">
+            </div>
+            <div class="form-group">
+                <label for="treecover-tln-max">Treecover TLN Max:</label>
+                <input type="number" id="treecover-tln-max" value="25">
+            </div>
+
+            <div class="form-group">
+                <label for="treecover-btl-min">Treecover BTL Min:</label>
+                <input type="number" id="treecover-btl-min" value="25">
+            </div>
+            <div class="form-group">
+                <label for="treecover-btl-max">Treecover BTL Max:</label>
+                <input type="number" id="treecover-btl-max" value="80">
+            </div>
         </div>
 
 
+        <div class="form-group">
+            <label>Helpers Layers:</label>
+            <div id="include-helpers-container">
+                <div class="checkbox-container">
+                    <input type="checkbox" id="treecover_shading" value="treecover_shading">
+                    <label for="treecover_shading">Treecover Shading</label>
+                </div>
+                <div class="checkbox-container">  <input type="checkbox" id="aspect_layers" value="aspect_layers">
+                    <label for="aspect_layers">Aspect Layers</label>
+                </div>
+                <div class="checkbox-container">
+                    <input type="checkbox" id="treeline_bands_legacy" value="treeline_bands_legacy">
+                    <label for="treeline_bands_legacy">Treeline Bands Legacy</label>
+                </div>
+            </div>
+        </div>
+        
         <button id="get-forecast-button">Get Forecast</button>
     </div>
 
