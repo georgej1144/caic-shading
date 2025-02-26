@@ -17,7 +17,7 @@ function makeNonNegative(inputElement) {
 }
 
 async function getJsonFromEndpoint(data) {
-    const endpoint = `https://caicforecast-cors-proxy.morning-mode-39f3.workers.dev/?data=${encodeURIComponent(data)}`;
+    const endpoint = `https://cors-proxy.gjnsn.com/corsproxy_magic/?endpoint=${data}`;
     console.log(endpoint);
     try {
         const response = await fetch(endpoint, {
