@@ -73,13 +73,13 @@ function get_treecover_shading_layers() {
 
 function get_helper_layers() {
     let ret = []
-    if(document.getElementById("treecover_shading").value) {
+    if(document.getElementById("treecover_shading").checked) {
         ret.push(...get_treecover_shading_layers());
     }
-    if(document.getElementById("aspect_quadrants").value) {
+    if(document.getElementById("aspect_quadrants").checked) {
         ret.push(...get_aspect_shading_layers());
     }
-    if(document.getElementById("aspect_gradient").value) {
+    if(document.getElementById("aspect_gradient").checked) {
         ret.push(get_aspect_gradient_layer());
     }
     return ret
