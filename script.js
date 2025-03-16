@@ -87,7 +87,6 @@ function get_helper_layers() {
 
 async function getJsonFromEndpoint(data) {
     const endpoint = `https://cors-proxy.gjnsn.com/corsproxy_magic/?endpoint=${data}`;
-    console.log(endpoint);
     try {
         const response = await fetch(endpoint, {
             headers: {
@@ -109,7 +108,6 @@ async function getJsonFromEndpoint(data) {
 
 function create_geojson(rules) {
     rules.push(...get_helper_layers());
-    console.log(rules);
     return {
         "features": rules.map((rule) => {
             return {
@@ -143,7 +141,6 @@ function get_specific_avaforecast(data, areaId) {
             return obj
         }
     }
-    console.log("fucking kill myself");
 }
 
 function get_treecover_bounds() {
@@ -358,7 +355,6 @@ function find_region_for_point(point, regions) {
             const isInside = turf.booleanPointInPolygon(turfPoint, mpolygon);
 
             if (isInside) {
-                console.log(region.id,region);
                 ret = region.id;
                 // return region.id; // Or region.properties.id, if ID is in properties
             }
@@ -379,18 +375,15 @@ async function main(lat,lon,date) {
         // always return the forcast FOR that day, not FROM that day
         const split = date.split("-");
         date_param = new Date();
-        console.log(date, date_param)
         date_param.setYear(split[0]);
         date_param.setUTCMonth(split[1]-1);
         date_param.setUTCDate(split[2]);
         date_param.setUTCHours(12,0,0,0);
-        console.log(date_param)
 
     } else {
         // if no date given, $OMIT$ use current day AND TIME
         date_param = new Date();
         date = date_param.toISOString().split("T")[0];
-        console.log(date)
         // 10:30PM UTC
         // date.setHours(23);
         // console.log(date.toISOString());
@@ -398,8 +391,6 @@ async function main(lat,lon,date) {
 
     const forecast = await avy_forecast(date_param);
     const regions = await avy_regions(date_param);
-    console.log("forecast", forecast);
-    console.log("regions", regions);
 
     treecoverAlpMin = 0;
     treecoverAlpMax = treecoverAlpTln.value;
@@ -409,12 +400,10 @@ async function main(lat,lon,date) {
     treecoverBtlMax = 100;
 
     const zone_id = find_region_for_point([lon,lat],regions);
-    console.log(zone_id);
     const zone_forecast = get_specific_avaforecast(forecast, zone_id);
     
     const day_probs = zone_forecast.avalancheProblems.days[0];
-    const interpretation = interpret_problems(day_probs, date)
-    console.log("main",zone_id,zone_forecast,interpretation);
+    const interpretation = interpret_problems(day_probs, date);
     const json_data = create_geojson(interpretation);
     save_as_json(json_data, "ava_shading_" + date);
 }
