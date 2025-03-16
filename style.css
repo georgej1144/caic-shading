@@ -13,6 +13,13 @@ body {
 .row {
     flex: 1;
     flex-wrap: nowrap;
+    align-self: stretch;
+    width: 80%; /* Adjust as needed */
+    max-width: 800px; /* Set a maximum width */
+    margin: 20px auto; /* Center horizontally */
+    border: 1px solid #eee;
+    padding: 20px;
+    border-radius: 5px;
 }
 
 .forecast-button {
@@ -29,15 +36,15 @@ body {
 .border-frame {
     display: flex;
     flex-direction: column;
+    align-self: center;
+    max-width: 80vw;
+    min-width: 60vw;
 }
 
-#config-panel {
-    width: 80%; /* Adjust as needed */
-    max-width: 800px; /* Set a maximum width */
-    margin: 20px auto; /* Center horizontally */
-    border: 1px solid #eee;
-    padding: 20px;
-    border-radius: 5px;
+.page-frame {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
 .checkbox-container {
@@ -57,7 +64,7 @@ body {
     cursor: pointer;
     padding: 0.5em;
     margin: 0.5em;
-    width: 50%;
+    width: 100%;
     border: none;
     text-align: left;
     outline: none;

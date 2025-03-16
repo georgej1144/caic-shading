@@ -7,85 +7,86 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <h1>CAIC Forecast to Caltopo Shading</h1>
-    <div class="border-frame">
+    <div class="page-frame">
+        <h1>CAIC Forecast to Caltopo Shading</h1>
+        <div class="border-frame">
 
-        <div class="forecast-frame">
-            <button class="forecast-button" id="get-forecast-button">Get Forecast</button>
-        </div>
+            <div class="forecast-frame">
+                <button class="forecast-button" id="get-forecast-button">Get Forecast</button>
+            </div>
 
-        <div class="row-container">
-            <div class="row" id="config-panel">
-                <h2>Options</h2>
-                <div class="options-frame">
+            <div class="row-container">
+                <div class="row" id="config-panel">
+                    <h2>Options</h2>
+                    <div class="options-frame">
 
-                    <div class="form-group">
-                        <label for="latitude">Latitude:</label>
-                        <input type="number" id="latitude" step="any" placeholder="Enter Latitude" value="40.050308">
-                    </div>
-        
-                    <div class="form-group">
-                        <label for="longitude">Longitude:</label>
-                        <input type="number" id="longitude" step="any" placeholder="Enter Longitude" value="-105.575101">
-                    </div>
-        
-                    <div class="form-group">
-                        <label for="forecast-date">Forecast Date:</label>
-                        <input type="date" id="forecast-date">
-                    </div>
-                    
-                    <button class="collapsible">Treecover% Settings</button>
-                    <div class="content">
                         <div class="form-group">
-                            <label for="treecover-alp-min">Above Treeline-Near Treeline Treecover%:</label>
-                            <input type="number" id="treecover-alp-tln" value="1">
+                            <label for="latitude">Latitude:</label>
+                            <input type="number" id="latitude" step="any" placeholder="Enter Latitude" value="40.050308">
                         </div>
+            
                         <div class="form-group">
-                            <label for="treecover-alp-max">Near Treeline-Below Treeline Treecover%: </label>
-                            <input type="number" id="treecover-tln-btl" value="25">
+                            <label for="longitude">Longitude:</label>
+                            <input type="number" id="longitude" step="any" placeholder="Enter Longitude" value="-105.575101">
                         </div>
-                    </div>
-                    
-                    <button class="collapsible">Slidable Slope Angles</button>
-                    <div class="content">
+            
                         <div class="form-group">
-                            <label for="slide-slope-min">Slide Slope Min:</label>
-                            <input type="number" id="slide-slope-min" value="30">
+                            <label for="forecast-date">Forecast Date:</label>
+                            <input type="date" id="forecast-date">
                         </div>
-                        <div class="form-group">
-                            <label for="slide-slope-max">Slide Slope Max:</label>
-                            <input type="number" id="slide-slope-max" value="50">
-                        </div>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label>Extra Layers:</label>
-                        <div id="include-helpers-container">
-                            <div class="checkbox-container">
-                                <input type="checkbox" id="treecover_shading">
-                                <label for="treecover_shading">Treecover Shading</label>
+                        
+                        <button class="collapsible">Treecover% Settings</button>
+                        <div class="content">
+                            <div class="form-group">
+                                <label for="treecover-alp-min">Above Treeline-Near Treeline Treecover%:</label>
+                                <input type="number" id="treecover-alp-tln" value="1">
                             </div>
-                            <div class="checkbox-container">
-                                <input type="checkbox" id="aspect_quadrants">
-                                <label for="aspect_quadrants">Aspect Quadrants</label>
+                            <div class="form-group">
+                                <label for="treecover-alp-max">Near Treeline-Below Treeline Treecover%: </label>
+                                <input type="number" id="treecover-tln-btl" value="25">
                             </div>
-                            <div class="checkbox-container">
-                                <input type="checkbox" id="aspect_gradient">
-                                <label for="aspect_gradient">Aspect Gradient</label>
+                        </div>
+                        
+                        <button class="collapsible">Slidable Slope Angles</button>
+                        <div class="content">
+                            <div class="form-group">
+                                <label for="slide-slope-min">Slide Slope Min:</label>
+                                <input type="number" id="slide-slope-min" value="30">
+                            </div>
+                            <div class="form-group">
+                                <label for="slide-slope-max">Slide Slope Max:</label>
+                                <input type="number" id="slide-slope-max" value="50">
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Extra Layers:</label>
+                            <div id="include-helpers-container">
+                                <div class="checkbox-container">
+                                    <input type="checkbox" id="treecover_shading">
+                                    <label for="treecover_shading">Treecover Shading</label>
+                                </div>
+                                <div class="checkbox-container">
+                                    <input type="checkbox" id="aspect_quadrants">
+                                    <label for="aspect_quadrants">Aspect Quadrants</label>
+                                </div>
+                                <div class="checkbox-container">
+                                    <input type="checkbox" id="aspect_gradient">
+                                    <label for="aspect_gradient">Aspect Gradient</label>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
-            
-            <div class="row" id="second-row">
-                <h2>Popular Zones</h2>
+                
+                <div class="row" id="second-row">
+                    <h2>Popular Zones</h2>
 
-                Work In Progress...
+                    Work In Progress...
+                </div>
             </div>
         </div>
     </div>
-
     <script src="script.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@turf/turf@7/turf.min.js"></script>
 </body>
