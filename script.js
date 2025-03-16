@@ -19,13 +19,79 @@ function makeNonNegative(inputElement) {
     });
 }
 
+function get_aspect_gradient_layer() {
+    // FILL ARRAY IN FORMAT:
+    //  1_ [int,int]: pair of values representing the angle bounds for the gradient section
+    //  2_ [str,str]: pair of string hex codes for the color at the start and end of the gradient
+    const aspect_gradient_mapping = [
+        {
+            "a": [0, 90], 
+            "c": ["FF0000","F0F000"]
+        },
+        {
+            "a": [90, 180],
+            "c": ["F0F000","00FF00"]
+        },
+        {
+            "a": [180, 210],
+            "c": ["00FF00","0000FF"]
+        },
+        {
+            "a": [210,360],
+            "c": ["0000FF","FF0000"]
+        },
+    ]
+    return {
+        "title": "ASPECT GRADIENT",
+        "rule": "sc_" + aspect_gradient_mapping.map((cur) => {
+            return rule_tool("a", cur.a) + rule_tool("c", cur.c);
+        }).join("p")
+    }
+    
+}
+
+function get_aspect_shading_layers() {
+    const aspect_shading_color = "FF00A0"
+    return Object.keys(region_aspect_mapping).map((key, i) => {
+        return {
+            "title": key.toUpperCase(),
+            "rule": "sc_" + rule_tool("a", region_aspect_mapping[key]) + "c" + aspect_shading_color + "p"
+        }
+    })
+}
+
+function get_treecover_shading_layers() {
+    const treecover_shading_colors = ["FF0000","0000FF","00FF00"];
+    const treecover_bounds = get_treecover_bounds();
+    return Object.keys(treecover_bounds).map((key, i) => {
+        return {
+            "title": "." + key.toUpperCase(),
+            "rule": "sc_" + rule_tool("t", treecover_bounds[key]) + "c" + treecover_shading_colors[i] + "p"
+        }
+    })
+}
+
+function get_helper_layers() {
+    let ret = []
+    if(document.getElementById("treecover_shading").value) {
+        ret.push(...get_treecover_shading_layers());
+    }
+    if(document.getElementById("aspect_quadrants").value) {
+        ret.push(...get_aspect_shading_layers());
+    }
+    if(document.getElementById("aspect_gradient").value) {
+        ret.push(get_aspect_gradient_layer());
+    }
+    return ret
+}
+
 async function getJsonFromEndpoint(data) {
     const endpoint = `https://cors-proxy.gjnsn.com/corsproxy_magic/?endpoint=${data}`;
     console.log(endpoint);
     try {
         const response = await fetch(endpoint, {
             headers: {
-              "Content-Type": "application/json",
+                "Content-Type": "application/json",
             }});
         if (!response.ok) {
             const errorText = await response.text(); // Get error details from server
@@ -42,9 +108,8 @@ async function getJsonFromEndpoint(data) {
 }
 
 function create_geojson(rules) {
-    // rules = rules + get_helper_layers()
-    // TODO: ADD HELPER LAYERS TO rules
-
+    rules.push(...get_helper_layers());
+    console.log(rules);
     return {
         "features": rules.map((rule) => {
             return {
@@ -63,8 +128,8 @@ function create_geojson(rules) {
 
 function save_as_json(exportObj, exportName){
     // https://stackoverflow.com/questions/19721439/download-json-object-as-a-file-from-browser
-    var dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(exportObj));
-    var downloadAnchorNode = document.createElement('a');
+    let dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(exportObj));
+    let downloadAnchorNode = document.createElement('a');
     downloadAnchorNode.setAttribute("href", dataStr);
     downloadAnchorNode.setAttribute("download", exportName + ".json");
     document.body.appendChild(downloadAnchorNode); // required for firefox
@@ -160,7 +225,7 @@ function danger_to_color(likelihood, expectedSize) {
 
 
 function danger_to_rule(problem, date) {
-    var aspects = split_by_elevation(problem.aspectElevations);
+    let aspects = split_by_elevation(problem.aspectElevations);
     const color = "FF0000"; // danger_to_color(null); // TODO: implement color mapping from danger levels
     const treecovers = get_treecover_bounds(); //
     rule = {
@@ -198,7 +263,7 @@ async function avy_forecast(date = null, and_weather = false) {
         params["datetime"] = date.toISOString();
     }
 
-    var data = "/products/all?"
+    let data = "/products/all?"
     for (const [key,val] of Object.entries(params)) {
         data += `${key}=${val}&`
     }
@@ -238,7 +303,7 @@ async function avy_regions(date = null, and_weather = false) {
         params["datetime"] = date.toISOString();
     }
 
-    var data = "/products/all/area?"
+    let data = "/products/all/area?"
     for (const [key,val] of Object.entries(params)) {
         data += `${key}=${val}&`
     }

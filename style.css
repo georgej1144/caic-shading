@@ -41,7 +41,6 @@ body {
 }
 
 .checkbox-container {
-    visibility: hidden;
     display: flex; /* Use flexbox to align checkbox and label */
     align-items: center; /* Vertically align checkbox and label */
     margin: .4em; /* Add some spacing between checkboxes */
