@@ -1,3 +1,4 @@
+// import "./helper_layers.js";
 
 const region_aspect_mapping = {
         "n": [338,23],
@@ -19,71 +20,7 @@ function makeNonNegative(inputElement) {
     });
 }
 
-function get_aspect_gradient_layer() {
-    // FILL ARRAY IN FORMAT:
-    //  1_ [int,int]: pair of values representing the angle bounds for the gradient section
-    //  2_ [str,str]: pair of string hex codes for the color at the start and end of the gradient
-    const aspect_gradient_mapping = [
-        {
-            "a": [0, 90], 
-            "c": ["FF0000","F0F000"]
-        },
-        {
-            "a": [90, 180],
-            "c": ["F0F000","00FF00"]
-        },
-        {
-            "a": [180, 210],
-            "c": ["00FF00","0000FF"]
-        },
-        {
-            "a": [210,360],
-            "c": ["0000FF","FF0000"]
-        },
-    ]
-    return {
-        "title": "ASPECT GRADIENT",
-        "rule": "sc_" + aspect_gradient_mapping.map((cur) => {
-            return rule_tool("a", cur.a) + rule_tool("c", cur.c);
-        }).join("p")
-    }
-    
-}
 
-function get_aspect_shading_layers() {
-    const aspect_shading_color = "FF00A0"
-    return Object.keys(region_aspect_mapping).map((key, i) => {
-        return {
-            "title": key.toUpperCase(),
-            "rule": "sc_" + rule_tool("a", region_aspect_mapping[key]) + "c" + aspect_shading_color + "p"
-        }
-    })
-}
-
-function get_treecover_shading_layers() {
-    const treecover_shading_colors = ["FF0000","0000FF","00FF00"];
-    const treecover_bounds = get_treecover_bounds();
-    return Object.keys(treecover_bounds).map((key, i) => {
-        return {
-            "title": "." + key.toUpperCase(),
-            "rule": "sc_" + rule_tool("t", treecover_bounds[key]) + "c" + treecover_shading_colors[i] + "p"
-        }
-    })
-}
-
-function get_helper_layers() {
-    let ret = []
-    if(document.getElementById("treecover_shading").checked) {
-        ret.push(...get_treecover_shading_layers());
-    }
-    if(document.getElementById("aspect_quadrants").checked) {
-        ret.push(...get_aspect_shading_layers());
-    }
-    if(document.getElementById("aspect_gradient").checked) {
-        ret.push(get_aspect_gradient_layer());
-    }
-    return ret
-}
 
 async function getJsonFromEndpoint(data) {
     const endpoint = `https://cors-proxy.gjnsn.com/corsproxy_magic/?endpoint=${data}`;
@@ -135,113 +72,7 @@ function save_as_json(exportObj, exportName){
     downloadAnchorNode.remove();
 }
 
-function get_specific_avaforecast(data, areaId) {
-    for(const obj of data) {
-        if(obj.areaId == areaId) {
-            return obj
-        }
-    }
-}
-
-function get_treecover_bounds() {
-    // fill into { "[elev]": [min,max],...}
-    return {
-        "alp": [treecoverAlpMin, treecoverAlpMax],
-        "tln": [treecoverTlnMin, treecoverTlnMax],
-        "btl": [treecoverBtlMin, treecoverBtlMax],
-    }
-}
-
-function sort_trim_aspects(aspects) {
-    /**
-     * Returns the start and end aspect
-     * Returns null if aspects is empty
-     */
-    if (aspects.length === 0) {
-        return null;
-    }
-    
-    let aspectRegions = aspects.map(asp => region_aspect_mapping[asp]);
-    let ret = [];
-    let i = 0;
-    
-    while (aspectRegions.length > 0) {
-        if (i > aspectRegions.length - 1) i = 0;
-
-        if (ret.length === 0) {
-            ret.push(aspectRegions[i]);
-            aspectRegions.splice(i, 1);
-        }
-
-        let [boundL, boundR] = aspectRegions[i] || [];
-        for (let j = 0; j < ret.length; j++) {
-            let [regL, regR] = ret[j];
-            if (boundL === regR) {
-                ret.splice(j + 1, 0, aspectRegions[i]);
-                aspectRegions.splice(i, 1);
-                break;
-            } else if (boundR === regL) {
-                ret.splice(j, 0, aspectRegions[i]);
-                aspectRegions.splice(i, 1);
-                break;
-            }
-        }
-        i++;
-    }
-    return [ret[0][0], ret[ret.length - 1][1]];
-}
-
-
-function rule_tool(mode, range) {
-    return mode + range.join("-");
-}
-
-function format_as_rule(aspect_range, treecover_range, color) {
-    return  rule_tool("s", [slideSlopeMin.value, slideSlopeMax.value]) +
-            rule_tool("a", aspect_range) +
-            rule_tool("t", treecover_range) +
-            "c" + color + "p";
-}
-
-function split_by_elevation(aspectElevations) {
-    let ret = {
-        "alp": [],
-        "tln": [],
-        "btl": [],
-    };
-    for(const e of aspectElevations) {
-        div = e.split("_");
-        ret[div[1]].push(div[0]);
-    }
-    return ret;
-}
-
-function danger_to_color(likelihood, expectedSize) {
-    // TODO: impl
-}
-
-
-function danger_to_rule(problem, date) {
-    let aspects = split_by_elevation(problem.aspectElevations);
-    const color = "FF0000"; // danger_to_color(null); // TODO: implement color mapping from danger levels
-    const treecovers = get_treecover_bounds(); //
-    rule = {
-        "title": "",
-        "rule": "sc_"
-    };
-    for(const key of Object.keys(aspects)) {
-        // per elev, get aspect bounds
-        aspects[key] = sort_trim_aspects(aspects[key]);
-        if(aspects[key]) {
-            // only add rule if prob exists for elev
-            rule.title = " " + problem.type + " " + date;
-            // rule.title = " " + problem.type + " " + date.toISOString().split("T")[0];
-            rule.rule += format_as_rule(aspects[key], treecovers[key], color);
-            // rule.rule += "p";
-        }
-    }
-    return rule;
-}   
+   
 
 function interpret_problems(problems, date) {
     let result = [];
@@ -409,6 +240,11 @@ async function main(lat,lon,date) {
 }
 
 
+export let treecoverAlpTln = document.getElementById('treecover-alp-tln');
+export let treecoverTlnBtl = document.getElementById('treecover-tln-btl');
+export let slideSlopeMin = document.getElementById('slide-slope-min');
+export let slideSlopeMax = document.getElementById('slide-slope-max');
+
 document.addEventListener('DOMContentLoaded', () => {
     const forecastDateInput = document.getElementById('forecast-date');
     const getForecastButton = document.getElementById('get-forecast-button');
@@ -453,6 +289,9 @@ document.addEventListener('DOMContentLoaded', () => {
     });
     
     getForecastButton.addEventListener('click', async () => {
+        // SIMPLE LAT LON REGEX
+        // MATCH 1 LAT | MATCH 2 LON
+        // (-?\d+.\d+)[,| ]+(-?\d+.\d+)
         let lat = document.getElementById('latitude').value;
         let lon = document.getElementById('longitude').value;
         let date = forecastDateInput.value;
