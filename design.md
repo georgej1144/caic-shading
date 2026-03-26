@@ -19,7 +19,7 @@ NAC_API_REQUEST
 - parse forecast object into standard form
 - run interp on standard forecast form
 
-## product?type=
+## product?type=forecast&center_id=[center_id]&zone_id=[zone_id]
 
 cannot specify date range, only returns latest report
 
@@ -51,6 +51,8 @@ if day empty, returns latest
 takes day in YYYY-MM-DD
 
 doesnt have crested butte??
+
+empty day returns latest
 
 ```
 https://api.avalanche.org/v2/public/products/map-layer?day=

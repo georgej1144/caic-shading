@@ -50,15 +50,15 @@ export function get_treecover_shading_layers() {
     })
 }
 
-export function get_helper_layers() {
+export function get_helper_layers(options) {    //TODO: add options for including helpers
     let ret = []
-    if(document.getElementById("treecover_shading").checked) {
+    if(options.helper_treecover_shading) {
         ret.push(...get_treecover_shading_layers());
     }
-    if(document.getElementById("aspect_quadrants").checked) {
+    if(options.helper_aspect_quadrants) {
         ret.push(...get_aspect_shading_layers());
     }
-    if(document.getElementById("aspect_gradient").checked) {
+    if(options.helper_aspect_gradient) {
         ret.push(get_aspect_gradient_layer());
     }
     return ret

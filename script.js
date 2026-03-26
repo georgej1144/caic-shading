@@ -1,16 +1,5 @@
 // import "./helper_layers.js";
 
-const region_aspect_mapping = {
-        "n": [338,23],
-        "ne": [23,68],
-        "e": [68,113],
-        "se": [113,158],
-        "s": [158,203],
-        "sw": [203,248],
-        "w": [248,293],
-        "nw": [293,338]
-    }
-
 function makeNonNegative(inputElement) {
     inputElement.addEventListener('input', () => {
         let value = parseFloat(inputElement.value);
@@ -20,31 +9,8 @@ function makeNonNegative(inputElement) {
     });
 }
 
-
-
-async function getJsonFromEndpoint(data) {
-    const endpoint = `https://cors-proxy.gjnsn.com/corsproxy_magic/?endpoint=${data}`;
-    try {
-        const response = await fetch(endpoint, {
-            headers: {
-                "Content-Type": "application/json",
-            }});
-        if (!response.ok) {
-            const errorText = await response.text(); // Get error details from server
-            throw new Error(`HTTP error! status: ${response.status}, details: ${errorText}`);
-        }
-
-        const jsonData = await response.json();
-        return jsonData;
-    } catch (error) {
-        console.error("Error fetching JSON:", error);
-        // Consider re-throwing the error or returning a default value depending on your needs.
-        throw error; // Re-throwing to allow calling function to handle the error.
-    }
-}
-
-function create_geojson(rules) {
-    rules.push(...get_helper_layers());
+function create_geojson(rules, options) {
+    rules.push(...get_helper_layers(options));
     return {
         "features": rules.map((rule) => {
             return {
@@ -72,156 +38,33 @@ function save_as_json(exportObj, exportName){
     downloadAnchorNode.remove();
 }
 
-   
 
-function interpret_problems(problems, date) {
-    let result = [];
-    for(let i = 0; i < problems.length; i++) {
-        result.push(danger_to_rule(problems[i], date))
-    }
-    return result
-}
+async function main(lat,lon) {
+    // let date_param = null;
+    // if(date) {
+    //     // if date given, use 12:00:00
+    //     // this will guarantee for any date we  
+    //     // TODO: TEST
+    //     // always return the forcast FOR that day, not FROM that day
+    //     const split = date.split("-");
+    //     date_param = new Date();
+    //     date_param.setYear(split[0]);
+    //     date_param.setUTCMonth(split[1]-1);
+    //     date_param.setUTCDate(split[2]);
+    //     date_param.setUTCHours(12,0,0,0);
 
-async function avy_forecast(date = null, and_weather = false) {
-    let params = {};
-    if (!and_weather) {
-        params["productType"] = "avalancheforecast";
-    }
-    if (date) {
-        params["datetime"] = date.toISOString();
-    }
+    // } else {
+    //     // if no date given, $OMIT$ use current day AND TIME
+    //     date_param = new Date();
+    //     date = date_param.toISOString().split("T")[0];
+    //     // 10:30PM UTC
+    //     // date.setHours(23);
+    //     // console.log(date.toISOString());
+    // }
 
-    let data = "/products/all?"
-    for (const [key,val] of Object.entries(params)) {
-        data += `${key}=${val}&`
-    }
+    const regions = await avy_regions();
 
-    try {
-        const resp = await getJsonFromEndpoint(data);
-        const ret = [];
-        
-        if (resp && Array.isArray(resp)) { // Check if resp is an array
-            for (const item of resp) {
-                if (
-                    typeof item === "object" &&
-                    item !== null &&
-                    item.type === "avalancheforecast"
-                ) {
-                    ret.push(item); // Just push the raw object
-                } else if (typeof item === "object" && item !== null) {
-                    // TODO: handle else
-                    ret.push(item); // Just push the raw object
-                }
-            }
-        }
-
-        return ret;
-    } catch (error) {
-        console.error("Error in avy_forecast:", error);
-        return [];
-    }
-}
-
-async function avy_regions(date = null, and_weather = false) {
-    let params = {};
-    if (!and_weather) {
-        params["productType"] = "avalancheforecast";
-    }
-    if (date) {
-        params["datetime"] = date.toISOString();
-    }
-
-    let data = "/products/all/area?"
-    for (const [key,val] of Object.entries(params)) {
-        data += `${key}=${val}&`
-    }
-
-    try {
-        const resp = await getJsonFromEndpoint(data);
-        const ret = [];
-
-        if (resp && resp.features && Array.isArray(resp.features)) { // Check if resp is an array
-            for (const item of resp.features) {
-                if (
-                    typeof item === "object" &&
-                    item !== null &&
-                    item.type === "Feature"
-                ) {
-                    ret.push(item); // Just push the raw object
-                } else if (typeof item === "object" && item !== null) {
-                    // TODO: handle else
-                    ret.push(item); // Just push the raw object
-                }
-            }
-        }
-
-        return ret;
-    } catch (error) {
-        console.error("Error in avy_forecast:", error);
-        return [];
-    }
-}
-
-function find_region_for_point(point, regions) {
-    if (!Array.isArray(regions)) {
-        console.error("Regions must be an array of GeoJSON polygons.");
-        return null; // Or throw an error
-    }
-
-    if (!Array.isArray(point) || point.length !== 2) {
-        console.error("Point must be a [longitude, latitude] array.");
-        return null;
-    }
-
-    const turfPoint = turf.point(point);
-    let ret = "";
-    for (const region of regions) {
-        if (typeof region !== 'object' || region === null || !region.geometry || !region.geometry.type || region.geometry.type !== 'MultiPolygon') {
-            console.warn("Invalid GeoJSON polygon encountered in regions array:", region);
-            continue; // Skip to the next region
-        }
-
-        try {
-            const mpolygon = turf.multiPolygon(region.geometry.coordinates); // Create Turf polygon
-            const isInside = turf.booleanPointInPolygon(turfPoint, mpolygon);
-
-            if (isInside) {
-                ret = region.id;
-                // return region.id; // Or region.properties.id, if ID is in properties
-            }
-        } catch (error) {
-            console.error("Error checking point in polygon:", error);
-        }
-    }
-    return ret;
-    // return null; // No region found
-}
-
-async function main(lat,lon,date) {
-    let date_param = null;
-    if(date) {
-        // if date given, use 12:00:00
-        // this will guarantee for any date we  
-        // TODO: TEST
-        // always return the forcast FOR that day, not FROM that day
-        const split = date.split("-");
-        date_param = new Date();
-        date_param.setYear(split[0]);
-        date_param.setUTCMonth(split[1]-1);
-        date_param.setUTCDate(split[2]);
-        date_param.setUTCHours(12,0,0,0);
-
-    } else {
-        // if no date given, $OMIT$ use current day AND TIME
-        date_param = new Date();
-        date = date_param.toISOString().split("T")[0];
-        // 10:30PM UTC
-        // date.setHours(23);
-        // console.log(date.toISOString());
-    }
-
-    const forecast = await avy_forecast(date_param);
-    const regions = await avy_regions(date_param);
+    const forecast = await avy_forecast();
 
     treecoverAlpMin = 0;
     treecoverAlpMax = treecoverAlpTln.value;
