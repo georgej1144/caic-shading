@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CAIC Forecast Config</title>
+    <title>Avalanche Forecast Shading Config</title>
     <link rel="stylesheet" href="style.css">
     <link rel="favicon" type="image/x-icon" href="caic-shading/favicon.ico">
 </head>
 <body>
     <div class="page-frame">
-        <h1>CAIC Forecast to Caltopo Shading</h1>
+        <h1>NAC Forecast to Caltopo Shading</h1>
         <div class="border-frame">
 
             <div class="forecast-frame">
@@ -21,43 +21,60 @@
                     <h2>Options</h2>
                     <div class="options-frame">
 
-                        <div class="form-group">
-                            <label for="latitude">Latitude:</label>
-                            <input type="number" id="latitude" step="any" placeholder="Enter Latitude" value="40.050308">
-                        </div>
-            
-                        <div class="form-group">
-                            <label for="longitude">Longitude:</label>
-                            <input type="number" id="longitude" step="any" placeholder="Enter Longitude" value="-105.575101">
-                        </div>
-            
-                        <div class="form-group">
-                            <label for="forecast-date">Forecast Date:</label>
-                            <input type="date" id="forecast-date">
+                        <div class="form-group tooltip">
+                            <label class="" for="Coordinates">Coordinates:
+                                <span class="tooltiptext">Enter a coordinate pair from within the target area. Latitude then longitude, separated by space, comma, or |.</span>
+                            </label>
+                            <input class="widen-input" type="text" id="coords" placeholder="Enter coordinates" value="40.050308, -105.575101">
                         </div>
                         
-                        <button class="collapsible">Treecover% Settings</button>
+                        <button class="collapsible tooltip active" id="treecover%">Treecover% Settings
+                            <span class="tooltiptext">Use this option to separate alpine and sub-alpine terrain by treecover % from the National Land Cover Dataset. Adjust these for your target area if needed and remember this data set <i><b>is not perfect</b></i>.</span>
+                        </button>
                         <div class="content">
                             <div class="form-group">
-                                <label for="treecover-alp-min">Above Treeline-Near Treeline Treecover%:</label>
-                                <input type="number" id="treecover-alp-tln" value="1">
+                                <label for="treecover-alp-tln">Above Treeline-Near Treeline Treecover%:</label>
+                                <input type="number" id="treecover-alp-tln" value="1" min="0" max="100">
                             </div>
                             <div class="form-group">
-                                <label for="treecover-alp-max">Near Treeline-Below Treeline Treecover%: </label>
-                                <input type="number" id="treecover-tln-btl" value="25">
+                                <label for="treecover-tln-btl">Near Treeline-Below Treeline Treecover%: </label>
+                                <input type="number" id="treecover-tln-btl" value="25" min="0" max="100">
+                            </div>
+                        </div>
+
+                        <button class="collapsible tooltip" id="elevations">Elevation Settings
+                            <span class="tooltiptext">Use this option to separate alpine and sub-alpine terrain by elevation. If used, these values <i><b>must</b></i> be adjusted to represent the target area.</span>
+                        </button>
+                        <div class="content">
+                            <div class="form-group">
+                                <label for="elevation-alp-tln">Above Treeline-Near Treeline Elevation:</label>
+                                <input type="number" id="elevation-alp-tln" value="11500" min="0" max="30000">
+                            </div>
+                            <div class="form-group">
+                                <label for="elevation-tln-btl">Near Treeline-Below Treeline Elevation: </label>
+                                <input type="number" id="elevation-tln-btl" value="10500" min="0" max="30000">
+                            </div>
+
+                            <div class="form-group">
+                                <div class="checkbox-container">
+                                    <input class="unit-radio" type="radio" id="elevationFeet" name="elevationUnit" value="f" checked>
+                                    <label for="elevationFeet">Feet</label>
+                                </div>
+                                <div class="checkbox-container">
+                                    <input class="unit-radio" type="radio" id="elevationMeters" name="elevationUnit" value="m">
+                                    <label for="elevationMeters">Meters</label>
+                                </div>
                             </div>
                         </div>
                         
-                        <button class="collapsible">Slidable Slope Angles</button>
-                        <div class="content">
-                            <div class="form-group">
-                                <label for="slide-slope-min">Slide Slope Min:</label>
-                                <input type="number" id="slide-slope-min" value="30">
-                            </div>
-                            <div class="form-group">
-                                <label for="slide-slope-max">Slide Slope Max:</label>
-                                <input type="number" id="slide-slope-max" value="50">
-                            </div>
+                        
+                        <div class="form-group">
+                            <label for="slide-slope-min">Slide Slope Min:</label>
+                            <input class="widen-input" type="number" id="slide-slope-min" value="30" min="0" max="90">
+                        </div>
+                        <div class="form-group">
+                            <label for="slide-slope-max">Slide Slope Max:</label>
+                            <input class="widen-input" type="number" id="slide-slope-max" value="50" min="0" max="90" on>
                         </div>
                         
                         <div class="form-group">
@@ -89,6 +106,8 @@
         </div>
     </div>
     <script type="module" src="script.js"></script>
+    <script type="module" src="api-util.js"></script>
+    <script type="module" src="helper_layers.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@turf/turf@7/turf.min.js"></script>
 </body>
 </html>

@@ -51,7 +51,7 @@ export function get_treecover_shading_layers() {
 }
 
 export function get_helper_layers(options) {    //TODO: add options for including helpers
-    let ret = []
+    let ret = [];
     if(options.helper_treecover_shading) {
         ret.push(...get_treecover_shading_layers());
     }
