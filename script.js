@@ -1,22 +1,17 @@
-import { get_helper_layers } from "./helper_layers.js";
 import { NAC_API } from "./api-util.js";
 
 function enforceMinMax(el) {
-    console.log('t')
     if (el.value != "") {
         if (parseInt(el.value) < parseInt(el.min)) {
             el.value = el.min;
         }
         if (parseInt(el.value) > parseInt(el.max)) {
-            console.log(el.value, el.max, parseInt(el.value))
             el.value = el.max;
-            console.log(el.value, el.max)
         }
     }
 }
 
 function create_geojson(rules, options) {
-    rules.push(...get_helper_layers(options));
     return {
         "features": rules.map((rule) => {
             return {
@@ -67,37 +62,50 @@ async function main(lat,lon) {
         "useElevation": elevationSettingsButton.nextElementSibling.checkVisibility(),
         "elevationUnit": elevationFeet.checked ? 'f' : 'm',
         "elevations": {},
+        "treecover_bounds": {
+            [interpreter.elevation_mapping[0]]: [0, parseInt(treecoverAlpTln.value)],
+            [interpreter.elevation_mapping[1]]: [parseInt(treecoverAlpTln.value), parseInt(treecoverTlnBtl.value)],
+            [interpreter.elevation_mapping[2]]: [parseInt(treecoverTlnBtl.value), 100],
+        },
+        "elevation_bounds": {
+            [interpreter.elevation_mapping[0]]: [parseInt(elevationAlpTln.value), 30000],
+            [interpreter.elevation_mapping[1]]: [parseInt(elevationTlnBtl.value), parseInt(elevationAlpTln.value)],
+            [interpreter.elevation_mapping[2]]: [0, parseInt(elevationTlnBtl.value)],
+        },      
         "slideSlopeMin": parseInt(slideSlopeMin.value),
         "slideSlopeMax": parseInt(slideSlopeMax.value),
         "lat": lat,
         "lon": lon,
         "helper_treecover_shading": document.getElementById("treecover_shading").checked,
+        "helper_elevation_shading": document.getElementById("elevation_shading").checked,
         "helper_aspect_quadrants": document.getElementById("aspect_quadrants").checked,
         "helper_aspect_gradient": document.getElementById("aspect_gradient").checked,
         "date": date
     }
 
-    if(options.useTreecover) {
-        options.elevations = {
-                [interpreter.elevation_mapping[0]]: [0, parseInt(treecoverAlpTln.value)],
-                [interpreter.elevation_mapping[1]]: [parseInt(treecoverAlpTln.value), parseInt(treecoverTlnBtl.value)],
-                [interpreter.elevation_mapping[2]]: [parseInt(treecoverTlnBtl.value), 100],
-            }
-    } else {
-        options.elevations = {
-                [interpreter.elevation_mapping[0]]: [30000, parseInt(elevationAlpTln.value)],
-                [interpreter.elevation_mapping[1]]: [parseInt(elevationAlpTln.value), parseInt(elevationTlnBtl.value)],
-                [interpreter.elevation_mapping[2]]: [parseInt(elevationTlnBtl.value), 100],
-            }
-    }
+    // if(options.useTreecover) {
+    //     options.elevations = {
+    //             [interpreter.elevation_mapping[0]]: [0, parseInt(treecoverAlpTln.value)],
+    //             [interpreter.elevation_mapping[1]]: [parseInt(treecoverAlpTln.value), parseInt(treecoverTlnBtl.value)],
+    //             [interpreter.elevation_mapping[2]]: [parseInt(treecoverTlnBtl.value), 100],
+    //         }
+    // } else {
+    //     options.elevations = {
+    //             [interpreter.elevation_mapping[0]]: [30000, parseInt(elevationAlpTln.value)],
+    //             [interpreter.elevation_mapping[1]]: [parseInt(elevationAlpTln.value), parseInt(elevationTlnBtl.value)],
+    //             [interpreter.elevation_mapping[2]]: [parseInt(elevationTlnBtl.value), 100],
+    //         }
+    // }
 
-    const interpretation = await interpreter.run(options);
+    let interpretation = await interpreter.run(options);
     console.log(interpretation)
     if(!interpretation) {
         return;
     }
-    const json_data = create_geojson(interpretation, options);
+    // append helper layers to interpreted layers for export 
+    interpretation.push(...interpreter.get_helper_layers(options))
 
+    const json_data = create_geojson(interpretation, options);
     
     save_as_json(json_data, "ava_shading_" + date);
 }
@@ -158,12 +166,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // enforce hierarchy of elevations
     elevationAlpTln.addEventListener('change', () => {
-        if(parseInt(elevationAlpTln.value) > parseInt(elevationTlnBtl.value)) {
+        if(parseInt(elevationAlpTln.value) < parseInt(elevationTlnBtl.value)) {
             elevationAlpTln.value = elevationTlnBtl.value;
         }
     });
     elevationTlnBtl.addEventListener('change', () => {
-        if(parseInt(elevationTlnBtl.value) < parseInt(elevationAlpTln.value)) {
+        if(parseInt(elevationTlnBtl.value) > parseInt(elevationAlpTln.value)) {
             elevationTlnBtl.value = elevationAlpTln.value;
         }
     });

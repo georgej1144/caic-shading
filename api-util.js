@@ -22,6 +22,83 @@ class FORECAST_INTERPRETER {
         }
     }
     
+    get_aspect_gradient_layer() {
+        // FILL ARRAY IN FORMAT:
+        //  1_ [int,int]: pair of values representing the angle bounds for the gradient section
+        //  2_ [str,str]: pair of string hex codes for the color at the start and end of the gradient
+        const aspect_gradient_mapping = [
+            {
+                "a": [0, 90], 
+                "c": ["FF0000","F0F000"]
+            },
+            {
+                "a": [90, 180],
+                "c": ["F0F000","00FF00"]
+            },
+            {
+                "a": [180, 210],
+                "c": ["00FF00","0000FF"]
+            },
+            {
+                "a": [210,360],
+                "c": ["0000FF","FF0000"]
+            },
+        ]
+        return {
+            "title": "ASPECT GRADIENT",
+            "rule": "sc_" + aspect_gradient_mapping.map((cur) => {
+                return this.rule_tool("a", cur.a) + this.rule_tool("c", cur.c);
+            }).join("p")
+        }
+    }
+
+    get_aspect_shading_layers() {
+        const aspect_shading_color = "FF00A0"
+        return Object.keys(this.aspect_mapping).map((key, i) => {
+            return {
+                "title": key.toUpperCase(),
+                "rule": "sc_" + this.rule_tool("a", this.aspect_mapping[key]) + "c" + aspect_shading_color + "p"
+            }
+        })
+    }
+
+    get_treecover_shading_layers(options) {
+        const treecover_shading_colors = ["FF0000","0000FF","00FF00"];
+        return Object.keys(options.treecover_bounds).map((key, i) => {
+            return {
+                "title": "." + key.toUpperCase() + "_treecover",
+                "rule": "sc_" + this.rule_tool("t", options.treecover_bounds[key]) + "c" + treecover_shading_colors[i] + "p"
+            }
+        })
+    }
+
+    get_elevation_shading_layers(options) {
+        const elevation_shading_colors = ["FF0000","0000FF","00FF00"];
+        return Object.keys(options.elevation_bounds).map((key, i) => {
+            return {
+                "title": "." + key.toUpperCase() + "_elevation",
+                "rule": "sc_" + this.rule_tool("e", options.elevation_bounds[key]) + options.elevationUnit + "c" + elevation_shading_colors[i] + "p"
+            }
+        })
+    }
+
+    get_helper_layers(options) {    //TODO: add options for including helpers
+        let ret = [];
+        if(options.helper_treecover_shading) {
+            ret.push(...this.get_treecover_shading_layers(options));
+        }
+        if(options.helper_elevation_shading) {
+            ret.push(...this.get_elevation_shading_layers(options));
+        }
+        if(options.helper_aspect_quadrants) {
+            ret.push(...this.get_aspect_shading_layers());
+        }
+        if(options.helper_aspect_gradient) {
+            ret.push(this.get_aspect_gradient_layer());
+        }
+        return ret
+    }
+
     find_region_for_latlon(lat,lon, regions) {
         // returns [center_id, zone_id]
         if (!Array.isArray(regions)) {
@@ -157,7 +234,7 @@ class FORECAST_INTERPRETER {
     danger_to_rule(problem, options) {
         let aspects = this.split_by_elevation(problem.location);
         const color = "FF0000"; // danger_to_color(null); // TODO: implement color mapping from danger levels
-        const elevations = options.elevations;  //TODO: logic for options.elevations to be object of correct form
+        const elevations = options.useTreecover ? options.treecover_bounds : options.elevation_bounds;  //TODO: logic for options.elevations to be object of correct form
         let rule = {
             "title": "",
             "rule": "sc_"
@@ -223,7 +300,7 @@ class CAIC_API extends FORECAST_INTERPRETER {
         }
 
         try {
-            const response = await self.getJsonFromEndpoint(endpoint);
+            const response = await this.getJsonFromEndpoint(endpoint);
             console.log(response);
             console.log("UNFINISHED FLOW, RETURN CAIC/PROCESS")
             return response
