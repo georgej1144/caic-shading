@@ -2,13 +2,6 @@ FORECAST_INTERPRETER
 - act on standard object
 
 
-CAIC_API_REQUEST
-- request caic zone endpoint and forecast endpoint
-- get lat/lon and use to find regionID
-- select regionID from full forecast list
-- parse forecast object into standard form
-- run interp on standard forecast form
-
 NAC_API_REQUEST
 - request map-layer for zone geometies
 - get lat/lon and use to find centerID and zoneID
