@@ -43,6 +43,11 @@ body {
     justify-content: center;
 }
 
+.options-frame {
+    display: flex;
+    flex-direction: column;
+}
+
 .border-frame {
     display: flex;
     flex-direction: column;
@@ -87,14 +92,7 @@ body {
 }
 
 .widen-input {
-    /* width: -moz-available;
-    width: -webkit-fill-available;
-    width: fill-available; */
     width: 60%
-}
-
-.input-wrapper {
-    width: 60%;
 }
 
 .active, .collapsible:hover {
@@ -171,4 +169,47 @@ button {
     visibility: visible;
 }
 
+.saved_menubar {
+    display: flex;
+    flex-direction: row;
+    gap: 20px;
+}
 
+.saved_menubar_label {
+    display:flex;
+    padding-bottom: .4em;
+    padding-left: 0;
+    width: 40%;
+}
+
+.saved_menubar_label > input {
+    display: flex;
+    min-width: 0;
+}
+
+.saved_menubar_coords {
+    display:flex;
+    padding-bottom: .4em;
+    width: 45%;
+}
+
+.saved_menubar_coords > input {
+    display: flex;
+    min-width: 0;
+}
+
+.saved_menubar_savebtn {
+    display:flex;
+    padding-bottom: .4em;
+    padding-right: 0;
+}
+
+.saved_menubar_savebtn > button {
+    padding: .4em;
+    padding-bottom: .3em;
+    background-color: #4CAF50;
+}
+
+.saved_menubar_savebtn > button:hover {
+    background-color: #45a049;
+}
