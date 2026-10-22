@@ -2,6 +2,7 @@ FORECAST_INTERPRETER
 - act on standard object
 
 
+
 NAC_API_REQUEST
 - request map-layer for zone geometies
 - get lat/lon and use to find centerID and zoneID
